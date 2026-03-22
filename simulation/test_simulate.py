@@ -7,6 +7,7 @@ from pathlib import Path
 
 sys.path.insert(0, str(Path(__file__).parent))
 from simulate import load_pdf_text, load_skill, SENTINEL_INSTRUCTION, SKILLS_DIR, LAB_DIR, detect_sentinel, strip_sentinel, build_transition_note
+from simulate import format_skill_section, format_chatlog
 
 
 def test_load_pdf_text_returns_string():
@@ -75,3 +76,45 @@ def test_build_transition_note_contains_both_skills():
     note = build_transition_note("research-question", "data-preparation")
     assert "research-question" in note
     assert "data-preparation" in note
+
+
+def test_format_skill_section_has_header():
+    section = format_skill_section("research-question", [("Hi", "Hello")])
+    assert "## Skill 1: Research Question" in section
+
+
+def test_format_skill_section_has_exchanges():
+    section = format_skill_section("research-question", [("student msg", "ext msg")])
+    assert "**Student:**" in section
+    assert "student msg" in section
+    assert "**Extension:**" in section
+    assert "ext msg" in section
+
+
+def test_format_skill_section_skill_number():
+    # data-preparation is skill 2
+    section = format_skill_section("data-preparation", [("q", "a")])
+    assert "## Skill 2:" in section
+
+
+def test_format_chatlog_has_both_parts():
+    sections = ["## Skill 1: Research Question\n\n**Student:** hi\n\n**Extension:** hey"]
+    control = [("hello", "world")]
+    chatlog = format_chatlog(sections, control, "Great critique.")
+    assert "Part 1: Student A" in chatlog
+    assert "Part 2: Student B" in chatlog
+    assert "Critic" in chatlog
+
+
+def test_format_chatlog_baseline_uses_assistant_label():
+    chatlog = format_chatlog([], [("student q", "assistant a")], "critique")
+    assert "**Student:**" in chatlog
+    assert "**Assistant:**" in chatlog
+    assert "student q" in chatlog
+    assert "assistant a" in chatlog
+
+
+def test_format_chatlog_has_date():
+    from datetime import date
+    chatlog = format_chatlog([], [], "critique")
+    assert str(date.today().year) in chatlog

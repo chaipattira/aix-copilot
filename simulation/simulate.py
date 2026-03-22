@@ -82,8 +82,23 @@ def build_transition_note(prev_skill: str, next_skill: str) -> str:
     )
 
 
+_SKILL_DISPLAY_NAMES = {
+    "research-question": "Research Question",
+    "data-preparation": "Data Preparation",
+    "descriptive-analysis": "Descriptive Analysis",
+    "statistical-analysis": "Statistical Analysis",
+    "interpretation": "Interpretation",
+}
+
+
 def format_skill_section(skill_name: str, exchanges: list[tuple[str, str]]) -> str:
-    raise NotImplementedError
+    skill_number = SKILLS.index(skill_name) + 1
+    display_name = _SKILL_DISPLAY_NAMES[skill_name]
+    lines = [f"## Skill {skill_number}: {display_name}\n"]
+    for student_msg, ext_msg in exchanges:
+        lines.append(f"**Student:** {student_msg}\n")
+        lines.append(f"**Extension:** {ext_msg}\n")
+    return "\n".join(lines)
 
 
 def format_chatlog(
@@ -91,7 +106,23 @@ def format_chatlog(
     control_exchanges: list[tuple[str, str]],
     critique: str,
 ) -> str:
-    raise NotImplementedError
+    today = date.today().isoformat()
+    parts = [
+        f"# AIX Copilot Simulation — Lab 11: Effect Measure Modification",
+        f"*Date: {today}*\n",
+        "---\n",
+        "# Part 1: Student A — With Extension (aix-data-analysis v0.1.0)\n",
+    ]
+    parts.extend(skill_sections)
+    parts.append("\n---\n")
+    parts.append("# Part 2: Student B — Baseline LLM (No Extension)\n")
+    for student_msg, asst_msg in control_exchanges:
+        parts.append(f"**Student:** {student_msg}\n")
+        parts.append(f"**Assistant:** {asst_msg}\n")
+    parts.append("\n---\n")
+    parts.append("# Critic's Comparative Commentary\n")
+    parts.append(critique)
+    return "\n".join(parts)
 
 
 def run_extension_simulation(
