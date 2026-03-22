@@ -1,5 +1,3 @@
-<!-- ABOUTME: Guides students to define epidemiology research question before analysis -->
-<!-- ABOUTME: Uses hard gates, Socratic questioning, and plan approval before artifact creation -->
 ---
 name: research-question
 description: "Use when the student has a dataset but has not yet written a research question in `analysis/research-question.md`"

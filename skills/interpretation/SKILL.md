@@ -1,5 +1,3 @@
-<!-- ABOUTME: Guides students through visualizations, sensitivity analyses, and final write-up scaffold -->
-<!-- ABOUTME: Terminal skill — produces final-interpretation.md with no downstream gate -->
 ---
 name: interpretation
 description: "Use when `analysis/model-interpretation.md` exists but `analysis/final-interpretation.md` does not"

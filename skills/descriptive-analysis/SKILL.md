@@ -1,5 +1,3 @@
-<!-- ABOUTME: Guides students to produce Table 1 and describe the study population -->
-<!-- ABOUTME: Uses hard gates, Socratic questioning, and plan approval before code generation -->
 ---
 name: descriptive-analysis
 description: "Use when `analysis/data-preparation.md` exists but `analysis/table1-interpretation.md` does not"

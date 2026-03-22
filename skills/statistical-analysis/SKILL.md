@@ -1,5 +1,3 @@
-<!-- ABOUTME: Guides students through primary statistical analysis, branching by research question type -->
-<!-- ABOUTME: Handles descriptive, predictive, and associational/causal paths with hard gates -->
 ---
 name: statistical-analysis
 description: "Use when `analysis/table1-interpretation.md` exists but `analysis/model-interpretation.md` does not"

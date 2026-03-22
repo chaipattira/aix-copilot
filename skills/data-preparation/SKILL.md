@@ -1,5 +1,3 @@
-<!-- ABOUTME: Guides students through loading, merging, cleaning, and freezing the analytic dataset -->
-<!-- ABOUTME: Uses hard gates, Socratic questioning, and plan approval before code generation -->
 ---
 name: data-preparation
 description: "Use when `analysis/research-question.md` exists but the frozen analytic file has not yet been saved"
