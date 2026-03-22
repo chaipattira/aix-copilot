@@ -128,13 +128,121 @@ def format_chatlog(
 def run_extension_simulation(
     client: anthropic.Anthropic, lab_text: str
 ) -> tuple[list[str], list[tuple[str, str]]]:
-    raise NotImplementedError
+    """Returns (skill_sections, all_exchanges).
+    skill_sections: formatted markdown strings, one per skill.
+    all_exchanges: raw (student, extension) pairs across all skills.
+    """
+    opening = (
+        "Hey, I need to complete Lab 11 for my epi methods class. "
+        f"Here's the assignment:\n\n{lab_text}\n\n"
+        "I want to use R. Can you help me just get through this?"
+    )
+
+    messages: list[dict] = []
+    skill_sections: list[str] = []
+    all_exchanges: list[tuple[str, str]] = []
+
+    for i, skill_name in enumerate(SKILLS):
+        skill_system = load_skill(skill_name)
+        exchanges: list[tuple[str, str]] = []
+
+        if i == 0:
+            student_msg = opening
+        else:
+            # Student continues naturally; transition note already injected
+            student_msg = client.messages.create(
+                model=MODEL,
+                max_tokens=512,
+                system=STUDENT_SYSTEM,
+                messages=messages,
+            ).content[0].text
+
+        for turn in range(MAX_TURNS_PER_SKILL):
+            # Student turn (turn 0 uses the pre-computed student_msg; subsequent turns generate new ones)
+            if turn == 0:
+                current_student_msg = student_msg
+            else:
+                current_student_msg = client.messages.create(
+                    model=MODEL,
+                    max_tokens=512,
+                    system=STUDENT_SYSTEM,
+                    messages=messages,
+                ).content[0].text
+
+            messages.append({"role": "user", "content": current_student_msg})
+
+            # Extension turn
+            ext_response = client.messages.create(
+                model=MODEL,
+                max_tokens=1024,
+                system=skill_system,
+                messages=messages,
+            ).content[0].text
+
+            sentinel_found = detect_sentinel(ext_response, skill_name)
+            clean_response = strip_sentinel(ext_response)
+
+            if not sentinel_found and turn == MAX_TURNS_PER_SKILL - 1:
+                clean_response += "\n\n*[SKILL TIMEOUT — forced advance]*"
+
+            messages.append({"role": "assistant", "content": clean_response})
+            exchanges.append((current_student_msg, clean_response))
+            all_exchanges.append((current_student_msg, clean_response))
+
+            if sentinel_found:
+                break
+
+        skill_sections.append(format_skill_section(skill_name, exchanges))
+
+        # Inject transition note before next skill
+        if i < len(SKILLS) - 1:
+            note = build_transition_note(skill_name, SKILLS[i + 1])
+            messages.append({"role": "assistant", "content": note})
+
+    return skill_sections, all_exchanges
 
 
 def run_control_simulation(
     client: anthropic.Anthropic, lab_text: str
 ) -> list[tuple[str, str]]:
-    raise NotImplementedError
+    opening = (
+        "Hey, I need to complete Lab 11 for my epi methods class. "
+        f"Here's the assignment:\n\n{lab_text}\n\n"
+        "I want to use R. Can you help me just get through this?"
+    )
+
+    messages: list[dict] = [{"role": "user", "content": opening}]
+    exchanges: list[tuple[str, str]] = []
+
+    # First assistant response
+    asst_response = client.messages.create(
+        model=MODEL,
+        max_tokens=1024,
+        system=BASELINE_SYSTEM,
+        messages=messages,
+    ).content[0].text
+    messages.append({"role": "assistant", "content": asst_response})
+    exchanges.append((opening, asst_response))
+
+    for _ in range(MAX_TURNS_CONTROL - 1):
+        student_msg = client.messages.create(
+            model=MODEL,
+            max_tokens=512,
+            system=STUDENT_SYSTEM,
+            messages=messages,
+        ).content[0].text
+        messages.append({"role": "user", "content": student_msg})
+
+        asst_response = client.messages.create(
+            model=MODEL,
+            max_tokens=1024,
+            system=BASELINE_SYSTEM,
+            messages=messages,
+        ).content[0].text
+        messages.append({"role": "assistant", "content": asst_response})
+        exchanges.append((student_msg, asst_response))
+
+    return exchanges
 
 
 def run_critic(
@@ -143,7 +251,36 @@ def run_critic(
     part_b_text: str,
     answer_key: str,
 ) -> str:
-    raise NotImplementedError
+    system = (
+        "You are a pedagogical observer comparing two epidemiology students doing the same lab:\n"
+        "- Student A used the aix-data-analysis extension (structured, gate-kept, Socratic)\n"
+        "- Student B used a baseline AI assistant with no structure\n\n"
+        "Your critique should cover:\n"
+        "1. Each moment either student tried to shortcut the process (quote the conversation)\n"
+        "2. How each assistant responded — did the extension hold its guardrails? Did the baseline just comply?\n"
+        "3. Whether Student A's work shows deeper scientific reasoning than Student B's\n"
+        "4. Whether the overall pedagogical goals (thinking before coding, Socratic dialogue, plan approval before code) were achieved by the extension\n"
+        "5. Quality of the final interpretations for both students, compared against the answer key\n\n"
+        "## Answer Key\n\n"
+        "```sas\n"
+        f"{answer_key}\n"
+        "```"
+    )
+
+    user_content = (
+        "## Student A (Extension)\n\n"
+        f"{part_a_text}\n\n"
+        "## Student B (Baseline)\n\n"
+        f"{part_b_text}"
+    )
+
+    response = client.messages.create(
+        model=MODEL,
+        max_tokens=2048,
+        system=system,
+        messages=[{"role": "user", "content": user_content}],
+    )
+    return response.content[0].text
 
 
 def main() -> None:
