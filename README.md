@@ -20,3 +20,4 @@ Students invoke skills in order. Each skill enforces a hard gate: it checks for 
 
 - 2026-03-22: Plugin skeleton created (package.json and README.md)
 - 2026-03-22: All 5 skill files verified (research-question, data-preparation, descriptive-analysis, statistical-analysis, interpretation)
+- 2026-03-22: Implemented load_pdf_text and load_skill in simulation/simulate.py; all 5 load tests pass

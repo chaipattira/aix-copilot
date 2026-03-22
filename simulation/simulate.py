@@ -49,11 +49,17 @@ MAX_TURNS_CONTROL = 20
 
 
 def load_pdf_text(path: Path) -> str:
-    raise NotImplementedError
+    with pdfplumber.open(path) as pdf:
+        return "\n".join(
+            page.extract_text() or "" for page in pdf.pages
+        )
 
 
 def load_skill(skill_name: str) -> str:
-    raise NotImplementedError
+    skill_path = SKILLS_DIR / skill_name / "SKILL.md"
+    skill_content = skill_path.read_text()
+    prefix = SENTINEL_INSTRUCTION.format(skill_name=skill_name)
+    return prefix + "\n" + skill_content
 
 
 def detect_sentinel(response: str, skill_name: str) -> bool:
