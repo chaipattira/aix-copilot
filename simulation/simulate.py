@@ -284,7 +284,30 @@ def run_critic(
 
 
 def main() -> None:
-    raise NotImplementedError
+    client = anthropic.Anthropic()
+
+    print("Loading lab materials...")
+    lab_text = load_pdf_text(LAB_DIR / "SAS_Lab11 2025.docx.pdf")
+    answer_key = (LAB_DIR / "lab 11 emm.sas").read_text()
+
+    print("Running Student A simulation (with extension)...")
+    skill_sections, _ = run_extension_simulation(client, lab_text)
+
+    print("Running Student B simulation (baseline)...")
+    control_exchanges = run_control_simulation(client, lab_text)
+
+    print("Running critic...")
+    part_a_text = "\n\n".join(skill_sections)
+    part_b_text = "\n\n".join(
+        f"**Student:** {s}\n\n**Assistant:** {a}" for s, a in control_exchanges
+    )
+    critique = run_critic(client, part_a_text, part_b_text, answer_key)
+
+    print("Writing chatlog...")
+    chatlog = format_chatlog(skill_sections, control_exchanges, critique)
+    output_path = Path(__file__).parent / f"chatlog-{date.today().isoformat()}.md"
+    output_path.write_text(chatlog)
+    print(f"Done. Chatlog written to {output_path}")
 
 
 if __name__ == "__main__":
