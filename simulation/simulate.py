@@ -63,15 +63,23 @@ def load_skill(skill_name: str) -> str:
 
 
 def detect_sentinel(response: str, skill_name: str) -> bool:
-    raise NotImplementedError
+    last_line = response.rstrip().split("\n")[-1].strip()
+    return last_line == f"SKILL_COMPLETE: {skill_name}"
 
 
 def strip_sentinel(response: str) -> str:
-    raise NotImplementedError
+    lines = response.rstrip().split("\n")
+    if lines and lines[-1].strip().startswith("SKILL_COMPLETE:"):
+        lines = lines[:-1]
+    return "\n".join(lines).rstrip()
 
 
 def build_transition_note(prev_skill: str, next_skill: str) -> str:
-    raise NotImplementedError
+    return (
+        f"The {prev_skill} skill has completed. "
+        f"The extension has loaded the {next_skill} skill. "
+        "Continue as the same tired student — you still want to get this done fast."
+    )
 
 
 def format_skill_section(skill_name: str, exchanges: list[tuple[str, str]]) -> str:
