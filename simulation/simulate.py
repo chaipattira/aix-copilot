@@ -125,6 +125,12 @@ def format_chatlog(
     return "\n".join(parts)
 
 
+def _swap_roles(messages: list[dict]) -> list[dict]:
+    """Swap user/assistant roles so the student model sees itself as assistant."""
+    role_map = {"user": "assistant", "assistant": "user"}
+    return [{"role": role_map[m["role"]], "content": m["content"]} for m in messages]
+
+
 def run_extension_simulation(
     client: anthropic.Anthropic, lab_text: str
 ) -> tuple[list[str], list[tuple[str, str]]]:
@@ -149,8 +155,8 @@ def run_extension_simulation(
         if i == 0:
             student_msg = opening
         else:
-            # Pass transition note via system prompt (not as a message) to avoid
-            # back-to-back assistant messages, which claude-sonnet-4-6 rejects.
+            # Swap roles so the student model sees the extension's messages as "user"
+            # and can respond as "assistant" (itself). Augment with transition note.
             prev_skill = SKILLS[i - 1]
             note = build_transition_note(prev_skill, skill_name)
             student_system_with_note = STUDENT_SYSTEM + f"\n\n[Instructor note: {note}]"
@@ -158,7 +164,7 @@ def run_extension_simulation(
                 model=MODEL,
                 max_tokens=512,
                 system=student_system_with_note,
-                messages=messages,
+                messages=_swap_roles(messages),
             ).content[0].text
 
         for turn in range(MAX_TURNS_PER_SKILL):
@@ -166,11 +172,13 @@ def run_extension_simulation(
             if turn == 0:
                 current_student_msg = student_msg
             else:
+                # After the extension responded, messages ends with assistant role.
+                # Swap roles so student model sees extension's last message as "user".
                 current_student_msg = client.messages.create(
                     model=MODEL,
                     max_tokens=512,
                     system=STUDENT_SYSTEM,
-                    messages=messages,
+                    messages=_swap_roles(messages),
                 ).content[0].text
 
             messages.append({"role": "user", "content": current_student_msg})
@@ -224,11 +232,12 @@ def run_control_simulation(
     exchanges.append((opening, asst_response))
 
     for _ in range(MAX_TURNS_CONTROL - 1):
+        # Swap roles so student model sees the assistant's last message as "user"
         student_msg = client.messages.create(
             model=MODEL,
             max_tokens=512,
             system=STUDENT_SYSTEM,
-            messages=messages,
+            messages=_swap_roles(messages),
         ).content[0].text
         messages.append({"role": "user", "content": student_msg})
 
