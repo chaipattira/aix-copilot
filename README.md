@@ -1,3 +1,5 @@
+<!-- ABOUTME: Project overview and progress log for the aix-data-analysis Claude Code plugin -->
+<!-- ABOUTME: Documents the 5 skills, usage instructions, and change history -->
 # aix-data-analysis
 
 A Claude Code plugin that guides students through epidemiological data analysis.
@@ -18,4 +20,4 @@ Students invoke skills in order. Each skill enforces a hard gate: it checks for 
 
 ## Progress Log
 
-- 2026-03-22: Plugin skeleton and all 5 skill files created
+- 2026-03-22: Plugin skeleton created (package.json and README.md)
