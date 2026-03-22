@@ -1,0 +1,14 @@
+# Claude Code
+.claude/
+
+# AIX-Copilot
+dist/
+.aix-copilot/
+.superpowers
+docs/superpowers/specs
+.gitignore
+claude.md
+.DS_Store
+
+# Simulation
+simulation/chatlog-*.md
