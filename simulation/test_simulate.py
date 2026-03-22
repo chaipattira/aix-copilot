@@ -36,4 +36,4 @@ def test_load_skill_sentinel_is_prepended():
     # Sentinel instruction appears before the skill content
     sentinel_pos = content.find("SKILL_COMPLETE: data-preparation")
     skill_content_start = content.find("---")  # SKILL.md files start with frontmatter
-    assert sentinel_pos < skill_content_start or sentinel_pos != -1
+    assert sentinel_pos != -1 and sentinel_pos < skill_content_start
