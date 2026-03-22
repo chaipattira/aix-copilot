@@ -50,7 +50,7 @@ Write code in this order, for both R and SAS.
 2. Merge with `DATA` step `MERGE` or `PROC SQL JOIN`
 3. Apply inclusion/exclusion criteria with `WHERE` or `IF` statements
 4. Error checks:
-   - Duplicates: `PROC SORT NODUPKEY` with `_ERROR_` check or `PROC FREQ`
+   - Duplicates: `PROC SORT NODUPKEY DUPOUT=dups_ds;` to route duplicates to a separate dataset for inspection, then check `dups_ds` is empty
    - Range checks: `PROC MEANS MIN MAX`
    - Missingness: `PROC MEANS NMISS`
 5. Create derived variables in a `DATA` step
