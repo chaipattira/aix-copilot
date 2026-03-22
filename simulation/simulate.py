@@ -149,11 +149,15 @@ def run_extension_simulation(
         if i == 0:
             student_msg = opening
         else:
-            # Student continues naturally; transition note already injected
+            # Pass transition note via system prompt (not as a message) to avoid
+            # back-to-back assistant messages, which claude-sonnet-4-6 rejects.
+            prev_skill = SKILLS[i - 1]
+            note = build_transition_note(prev_skill, skill_name)
+            student_system_with_note = STUDENT_SYSTEM + f"\n\n[Instructor note: {note}]"
             student_msg = client.messages.create(
                 model=MODEL,
                 max_tokens=512,
-                system=STUDENT_SYSTEM,
+                system=student_system_with_note,
                 messages=messages,
             ).content[0].text
 
@@ -193,11 +197,6 @@ def run_extension_simulation(
                 break
 
         skill_sections.append(format_skill_section(skill_name, exchanges))
-
-        # Inject transition note before next skill
-        if i < len(SKILLS) - 1:
-            note = build_transition_note(skill_name, SKILLS[i + 1])
-            messages.append({"role": "assistant", "content": note})
 
     return skill_sections, all_exchanges
 
