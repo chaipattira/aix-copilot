@@ -6,6 +6,7 @@ A comprehensive workflow for coding agents to guide students through epidemiolog
 
 | Skill | Purpose |
 |---|---|
+| `using-aix-copilot` | Meta-skill: fires at session start, routes Claude to the correct workflow skill |
 | `research-question` | Define research question, exposure, outcome, and DAG (uses draw-a-dag) |
 | `draw-a-dag` | Auxiliary: guide student through building a causal DAG; outputs mermaid diagram |
 | `data-preparation` | Load, merge, clean, and freeze the analytic dataset |
@@ -22,6 +23,7 @@ hooks/
   session-start.sh           # Injects Socratic Tutoring Style at session start
   socratic-style.md          # Dialogue pacing rules shared by all skills
 skills/
+  using-aix-copilot/         # Meta-skill: session routing and mandatory skill invocation
   research-question/
   draw-a-dag/
   data-preparation/
@@ -49,3 +51,4 @@ The Socratic Tutoring Style (voice/pacing, Concept Blocks, probing phrases) is i
 - 2026-03-26: Added Socratic Tutoring Style (voice/pacing, Concept Blocks, probing phrases) to claude.md as plugin-wide default; enriched research-question skill with per-question answer guidance, probing patterns, and ★ Concept Block triggers for all 7 questions
 - 2026-03-26: Enriched data-preparation, descriptive-analysis, and statistical-analysis skills with phased Socratic dialogue (good/weak/probing/Concept Blocks per question, structured Plan Gate templates); fixed glm() link argument bug in statistical-analysis code pattern
 - 2026-03-26: Packaged as Claude plugin — added .claude-plugin/plugin.json and SessionStart hook that injects Socratic Tutoring Style into every session; style moved from claude.md to hooks/socratic-style.md
+- 2026-03-27: Added using-aix-copilot meta-skill — fires at session start, establishes mandatory skill invocation, routes to correct workflow skill based on analysis/ artifacts
