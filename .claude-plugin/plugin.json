@@ -1,7 +1,7 @@
 {
   "name": "aix-data-analysis",
   "displayName": "Epidemiology Data Analysis",
-  "description": "Socratic tutoring workflow for epidemiology data analysis — guides students through research question definition, data preparation, descriptive analysis, statistical modeling, and interpretation",
+  "description": "Socratic tutoring workflow for epidemiology data analysis. Guides students through research question definition, data preparation, descriptive analysis, statistical modeling, and interpretation",
   "version": "0.1.0",
   "author": {
     "name": "Chaipat"

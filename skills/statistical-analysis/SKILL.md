@@ -73,7 +73,7 @@ _Good answer:_ Counts outcome events (not total N), calculates events-per-variab
 
 _Weak answer:_ "I have 500 observations so it should be fine" — confuses total sample size with event count.
 
-_Probing:_ "For binary outcomes, statistical power depends on the number of *events*, not total observations. Run `table(analytic_df$outcome)` (R) or `PROC FREQ` (SAS) — how many outcome events do you have? Divide by your number of covariates."
+_Probing:_ "For binary outcomes, statistical power depends on the number of *events*, not total observations. Check your frozen analytic file — how many observations have the outcome event? Divide that by the number of covariates you plan to include."
 
 _Concept Block trigger:_ Student uses total sample size to assess adequacy for logistic regression.
 > ★ Concept: For logistic regression, the effective sample size is the number of *outcome events* (the rarer category), not total observations. A common guideline is 10–20 events per predictor variable (EPV). Below 10 EPV, coefficient estimates become unstable and confidence intervals widen. Also check multivariate cell sizes — if any covariate strata have fewer than 5 events, consider collapsing categories or reducing the covariate set.

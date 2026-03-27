@@ -31,7 +31,7 @@ _Good answer:_ Reports the final N, mentions who was excluded, and verifies the 
 
 _Weak answer:_ Restates the exclusion criteria from data-preparation without checking the actual file count.
 
-_Probing:_ "Does `nrow(analytic_df)` (R) or `PROC CONTENTS` (SAS) match the final N in `analysis/data-preparation.md`? Load the file and verify."
+_Probing:_ "Load your frozen analytic file and check the row count. Does it match the final N in your data-preparation summary?"
 
 ---
 

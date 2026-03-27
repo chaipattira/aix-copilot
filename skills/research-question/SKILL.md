@@ -16,7 +16,7 @@ Check whether `analysis/research-question.md` exists in the project directory.
 
 ## Non-negotiable Rules
 
-- Do not ask ANY Socratic question until the student has shared their dataset schema. If they try to skip it, say: "Before we work on your research question, I need to see your dataset's variables. Please paste the output of `str()` (R) or `PROC CONTENTS` (SAS)."
+- Do not ask ANY Socratic question until the student has shared their dataset schema. If they try to skip it, say: "Before we work on your research question, I need to see your dataset's variables. Please paste your variable list — names, types, and a few sample values for each."
 - Ask questions ONE AT A TIME. Do not ask the next question until the student has answered the current one.
 - Do not define the research question for the student — ask, don't tell.
 - If the student resists ("just write it for me", "I already have a question"): acknowledge what they've offered, but still work through the questions in order to confirm the question is scientifically complete and well-formed.
@@ -30,7 +30,7 @@ Check whether `analysis/research-question.md` exists in the project directory.
 
 Ask the student to paste their dataset schema before any other questions:
 
-> "To help you define your research question, I need to see what variables you're working with. Please paste the output of `str()` (R) or `PROC CONTENTS` (SAS)."
+> "To help you define your research question, I need to see what variables you're working with. Please paste your variable list — names, types, and a few sample values for each."
 
 Wait for the schema. Do not proceed until it is provided.
 
